@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | NexDesk</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<div class="login-page">
+    <div class="login-card">
+
+        <a href="index.html" class="brand"
+           style="display:block;padding:0;color:#6c4bff">
+            <i class="fa-solid fa-headset"></i>Nex<span>Desk</span>
+        </a>
+
+        <h1>Create your account</h1>
+        <p>Join your organization's IT support workspace.</p>
+
+        <div id="message"
+             style="display:none;padding:12px;margin-bottom:18px;
+                    border-radius:10px;font-size:13px"></div>
+
+        <form action="register" method="post" id="registerForm">
+
+            <div class="form-group">
+                <label for="fullName">Full name</label>
+                <input class="form-control" type="text" id="fullName"
+                       name="fullName" placeholder="Enter your full name"
+                       maxlength="100" autocomplete="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Work email</label>
+                <input class="form-control" type="email" id="email"
+                       name="email" placeholder="you@company.com"
+                       maxlength="150" autocomplete="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="department">Department</label>
+                <select class="form-control" id="department"
+                        name="department" required>
+                    <option value="">Select department</option>
+                    <option value="IT">IT</option>
+                    <option value="Human Resources">Human Resources</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Operations">Operations</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input class="form-control" type="password" id="password"
+                       name="password" placeholder="At least 8 characters"
+                       minlength="8" autocomplete="new-password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm password</label>
+                <input class="form-control" type="password"
+                       id="confirmPassword" name="confirmPassword"
+                       placeholder="Re-enter your password"
+                       minlength="8" autocomplete="new-password" required>
+            </div>
+
+            <button class="btn btn-primary" type="submit"
+                    style="width:100%;padding:14px">
+                <i class="fa-solid fa-user-plus"></i>
+                Create Account
+            </button>
+        </form>
+
+        <div style="margin-top:20px;text-align:center;
+                    font-size:12px;color:#77748f">
+            Already have an account?
+            <a href="login.html"
+               style="color:#6c4bff;font-weight:800">
+                Sign in
+            </a>
+        </div>
+
+        <div style="margin-top:25px;padding-top:16px;
+                    border-top:1px solid #e8e4fa;text-align:center;
+                    font-size:11px;color:#77748f">
+            <i class="fa-solid fa-shield-halved"
+               style="color:#10b981"></i>
+            Your information is handled securely.
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById("registerForm");
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirmPassword");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", function (event) {
+        if (password.value !== confirmPassword.value) {
+            event.preventDefault();
+
+            message.style.display = "block";
+            message.style.background = "#ffe4e6";
+            message.style.color = "#be123c";
+            message.textContent = "Passwords do not match.";
+
+            confirmPassword.focus();
+        }
+    });
+</script>
+</body>
+</html>

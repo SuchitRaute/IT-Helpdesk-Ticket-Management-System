@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ticket Details | NexDesk</title><link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar" id="sidebar">
+<div class="brand"><i class="fa-solid fa-headset"></i> Nex<span>Desk</span></div>
+<div class="nav-section">WORKSPACE</div>
+<a class="nav-link" href="index.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+<a class="nav-link" href="tickets.html"><i class="fa-solid fa-ticket"></i> All Tickets</a>
+<a class="nav-link" href="create-ticket.html"><i class="fa-solid fa-circle-plus"></i> Create Ticket</a>
+<a class="nav-link active" href="ticket-details.html"><i class="fa-solid fa-file-lines"></i> Ticket Details</a>
+<div class="nav-section">MANAGEMENT</div>
+<a class="nav-link" href="employees.html"><i class="fa-solid fa-users"></i> Employees</a>
+<a class="nav-link" href="technicians.html"><i class="fa-solid fa-user-gear"></i> Technicians</a>
+<a class="nav-link" href="reports.html"><i class="fa-solid fa-chart-column"></i> Reports</a>
+<a class="nav-link" href="settings.html"><i class="fa-solid fa-sliders"></i> Settings</a>
+<div class="sidebar-footer"><div style="font-weight:700">NexDesk Support</div><div style="font-size:12px;color:#c4b5fd">IT Service Management</div></div>
+</aside>
+<main class="main">
+<header class="topbar">
+<button class="btn btn-secondary" id="menuToggle" aria-label="Toggle navigation"><i class="fa-solid fa-bars"></i></button>
+<div class="search-box"><input type="search" id="globalSearch" placeholder="Search..."></div>
+<button class="btn btn-secondary" id="themeToggle" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+<a href="create-ticket.html" class="btn btn-primary"><i class="fa-solid fa-plus"></i> New Ticket</a>
+</header>
+<div class="page-content">
+<div style="margin-bottom:20px"><a href="tickets.html" style="color:#6c4bff;text-decoration:none;font-size:13px"><i class="fa-solid fa-arrow-left"></i> Back to all tickets</a></div>
+<section class="hero"><div style="font-size:12px;font-weight:800;letter-spacing:2px;margin-bottom:10px">LIVE TICKET RECORD</div>
+<h1 id="pageTitle">Loading ticket…</h1><p id="pageSubtitle">Loading current status from the database.</p></section>
+<div id="pageMessage" role="status" style="margin:0 0 18px"></div>
+<div class="grid-2" style="align-items:start">
+<div style="display:grid;gap:20px">
+<section class="panel"><div class="panel-head" style="flex-wrap:wrap"><div><span class="badge" id="statusBadge">Loading</span>
+<h2 id="ticketTitle" style="margin-top:12px">Loading…</h2><p id="ticketMeta" style="font-size:12px;color:var(--muted);margin-top:8px"></p></div><span class="badge" id="priorityBadge"></span></div>
+<div class="panel-body"><h3 style="font-size:14px;margin-bottom:10px">Issue description</h3>
+<p id="ticketDescription" style="font-size:13px;line-height:1.9;color:var(--muted);white-space:pre-wrap"></p>
+<div class="divider" style="margin:22px 0"></div>
+<div class="grid-2"><div><div class="metric-label">Ticket ID</div><strong id="ticketIdLabel">—</strong></div>
+<div><div class="metric-label">Domain / Category</div><strong id="categoryLabel">—</strong></div>
+<div><div class="metric-label">Requested by</div><strong id="creatorLabel">—</strong></div>
+<div><div class="metric-label">Requester department</div><strong id="departmentLabel">—</strong></div></div>
+<div style="margin-top:18px;font-size:12px;color:var(--muted)">Created: <span id="createdAtLabel">—</span> · Last updated: <span id="updatedAtLabel">—</span></div>
+</div></section>
+<section class="panel"><div class="panel-head"><h2><i class="fa-solid fa-comments" style="color:#6c4bff;margin-right:8px"></i>Comments & Work Reports</h2></div>
+<div class="panel-body"><div id="commentsList" style="display:grid;gap:18px;margin-bottom:24px"></div>
+<form id="commentForm"><div class="form-group"><label for="comment">Add a comment / work update</label>
+<textarea class="form-control" id="comment" placeholder="Describe troubleshooting steps, questions, or updates…" minlength="2" maxlength="3000" required></textarea></div>
+<button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Save Comment</button></form>
+<p id="commentMessage" role="status" style="font-size:12px;margin-top:12px"></p></div></section>
+</div>
+<div style="display:grid;gap:20px">
+<section class="panel" id="managePanel"><div class="panel-head"><h2><i class="fa-solid fa-sliders" style="color:#f97316;margin-right:8px"></i>Update Ticket</h2></div>
+<div class="panel-body"><form id="updateTicketForm">
+<div class="form-group"><label for="status">Ticket status</label><select class="form-control" id="status" name="status">
+<option value="OPEN">Open</option><option value="ASSIGNED">Assigned</option><option value="IN_PROGRESS">In Progress</option><option value="ON_HOLD">On Hold</option><option value="RESOLVED">Resolved — work completed</option><option value="CLOSED">Closed</option></select></div>
+<div class="form-group" id="priorityGroup"><label for="priority">Priority</label><select class="form-control" id="priority" name="priority">
+<option value="LOW">Low</option><option value="MEDIUM">Medium</option><option value="HIGH">High</option><option value="CRITICAL">Critical</option></select></div>
+<div class="form-group" id="technicianGroup"><label for="technician">Assign technician (domain match)</label><select class="form-control" id="technician" name="technicianId"><option value="">Unassigned</option></select>
+<small style="display:block;color:var(--muted);margin-top:6px">Choose a technician whose domain matches this ticket category.</small></div>
+<div class="form-group" id="resolutionGroup" hidden><label for="resolutionNote">Resolution report (required to mark Resolved)</label><textarea class="form-control" id="resolutionNote" name="resolutionNote" maxlength="2500" placeholder="What did you do? What was fixed? How was it verified?"></textarea></div>
+<button type="submit" class="btn btn-primary" style="width:100%"><i class="fa-solid fa-floppy-disk"></i> Save to Database</button>
+</form><p id="updateMessage" role="status" style="font-size:12px;margin-top:12px"></p></div></section>
+<section class="panel"><div class="panel-head"><h2><i class="fa-solid fa-user-gear" style="color:#06b6d4;margin-right:8px"></i>Assigned Technician</h2></div>
+<div class="panel-body"><div style="display:flex;align-items:center;gap:12px"><div style="width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#06b6d4,#6c4bff);color:white;font-size:20px"><i class="fa-solid fa-user-gear"></i></div>
+<div><strong id="assignedName">Not assigned</strong><div id="assignedDepartment" style="font-size:12px;color:var(--muted);margin-top:4px"></div></div></div>
+<p id="routingMessage" style="font-size:12px;margin-top:14px;color:var(--muted)"></p></div></section>
+<section class="panel"><div class="panel-head"><h2><i class="fa-solid fa-clock-rotate-left" style="color:#ec4899;margin-right:8px"></i>Ticket Timeline</h2></div>
+<div class="panel-body"><div id="timelineList" style="font-size:12px;line-height:1.8;display:grid;gap:12px"></div></div></section>
+</div></div></div></main></div>
+<script src="script.js"></script>
+<script>
+(function(){
+"use strict";
+const params=new URLSearchParams(location.search);
+const id=params.get("id")||params.get("ticketId");
+const $=id=>document.getElementById(id);
+let payload=null;
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nice=s=>String(s||"—").replaceAll("_"," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+const date=s=>s?new Date(String(s).replace(" ","T")).toLocaleString():"—";
+function message(el,text,ok){$(el).textContent=text;$(el).style.color=ok?"#059669":"#dc2626";}
+function setBadge(el,text){$(el).textContent=nice(text);$(el).className="badge badge-"+String(text||"").toLowerCase().replaceAll("_","-");}
+function render(data){
+payload=data;const t=data.ticket;
+$("pageTitle").textContent="Ticket #NX-"+t.id;
+$("pageSubtitle").textContent=nice(t.status)+" · "+nice(t.priority)+" priority · "+t.category+" domain";
+$("ticketTitle").textContent=t.title;$("ticketDescription").textContent=t.description;
+$("ticketMeta").textContent="Created "+date(t.createdAt)+" · "+t.category;
+$("ticketIdLabel").textContent="#NX-"+t.id;$("categoryLabel").textContent=t.category;
+$("creatorLabel").textContent=t.creator||"Unknown";$("departmentLabel").textContent=t.department||"—";
+$("createdAtLabel").textContent=date(t.createdAt);$("updatedAtLabel").textContent=date(t.updatedAt);
+setBadge("statusBadge",t.status);setBadge("priorityBadge",t.priority+" priority");
+$("status").value=t.status;$("priority").value=t.priority;
+$("assignedName").textContent=t.assignedName||"Not assigned";
+const tech=data.technicians.find(x=>x.id===t.assignedTo);
+$("assignedDepartment").textContent=tech?("Domain: "+(tech.department||"Not specified")):"Waiting for a matching technician";
+$("routingMessage").textContent=tech?"Assigned technician domain: "+(tech.department||"Not specified")+".":"No technician has been assigned. An administrator can assign a matching domain technician.";
+const isAdmin=data.role==="ADMIN",isTech=data.role==="TECHNICIAN";
+$("priorityGroup").hidden=!isAdmin;$("technicianGroup").hidden=!isAdmin;
+if(!isAdmin&&!isTech)$("managePanel").hidden=true;
+if(isTech){$("status").innerHTML='<option value="ASSIGNED">Assigned</option><option value="IN_PROGRESS">In Progress</option><option value="ON_HOLD">On Hold</option><option value="RESOLVED">Resolved — work completed</option>'; $("status").value=t.status;}
+$("technician").replaceChildren(new Option("Unassigned",""));
+data.technicians.forEach(x=>{const opt=new Option(x.name+" — "+(x.department||"No domain"),String(x.id));$("technician").add(opt);});
+$("technician").value=t.assignedTo==null?"":String(t.assignedTo);
+$("commentsList").replaceChildren();
+if(!data.comments.length){$("commentsList").innerHTML='<p style="color:var(--muted);font-size:13px">No comments yet. Updates will appear here after they are saved.</p>';}
+data.comments.forEach(c=>{const item=document.createElement("article");item.style.cssText="padding:14px;border:1px solid var(--border);border-radius:12px";
+item.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><strong>'+esc(c.name)+' <span style="font-weight:400;color:var(--muted)">· '+esc(nice(c.role))+'</span></strong><span style="font-size:11px;color:var(--muted)">'+esc(date(c.at))+'</span></div><p style="white-space:pre-wrap;line-height:1.7;margin-top:8px">'+esc(c.text)+'</p>';$("commentsList").append(item);});
+$("timelineList").replaceChildren();
+if(!data.history.length){$("timelineList").innerHTML='<p style="color:var(--muted)">No history recorded yet.</p>';}
+data.history.forEach(h=>{const item=document.createElement("div");item.style.cssText="border-left:3px solid #6c4bff;padding:2px 0 10px 12px";
+item.innerHTML='<strong>'+esc(h.description||("Status: "+nice(h.newStatus)))+'</strong><div style="color:var(--muted);margin-top:3px">'+esc(h.by||"System")+' · '+esc(date(h.at))+'</div>';$("timelineList").append(item);});
+$("resolutionGroup").hidden=$("status").value!=="RESOLVED" || (payload && payload.ticket.status==="RESOLVED");
+}
+async function load(){
+if(!id){$("pageTitle").textContent="No ticket selected";message("pageMessage","Open a ticket from All Tickets so its database ID is included in the URL.",false);$("managePanel").hidden=true;return;}
+try{const r=await fetch("ticket-details-data?id="+encodeURIComponent(id),{cache:"no-store"});const d=await r.json();if(r.status===401){location.href="login.html";return;}if(!r.ok)throw Error(d.error||"Could not load ticket.");render(d);}
+catch(e){$("pageTitle").textContent="Ticket could not be loaded";message("pageMessage",e.message+" Check that GlassFish and Derby are running and the ticket exists.",false);}
+}
+$("status").addEventListener("change",()=>{$("resolutionGroup").hidden=$("status").value!=="RESOLVED" || (payload && payload.ticket.status==="RESOLVED");});
+$("updateTicketForm").addEventListener("submit",async e=>{
+e.preventDefault();if(!payload)return;
+const t=payload.ticket;const form=new URLSearchParams({ticketId:String(t.id),status:$("status").value,priority:$("priority").value,technicianId:$("technician").value,resolutionNote:$("resolutionNote").value});
+try{const r=await fetch("ticket-update",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body:form});const d=await r.json();if(r.status===401){location.href="login.html";return;}if(!r.ok)throw Error(d.message||"Update failed.");message("updateMessage",d.message,true);$("resolutionNote").value="";await load();}
+catch(e){message("updateMessage",e.message,false);}
+});
+$("commentForm").addEventListener("submit",async e=>{
+e.preventDefault();if(!payload)return;const value=$("comment").value.trim();if(value.length<2)return;
+try{const body=new URLSearchParams({ticketId:String(payload.ticket.id),comment:value});
+const r=await fetch("ticket-comment",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},body});const d=await r.json();if(r.status===401){location.href="login.html";return;}if(!r.ok)throw Error(d.message||"Comment could not be saved.");$("comment").value="";message("commentMessage",d.message,true);await load();}
+catch(e){message("commentMessage",e.message,false);}
+});
+load();
+})();
+</script>
+</body></html>

@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexDesk | All Tickets</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+        <div class="brand"><i class="fa-solid fa-headset"></i> Nex<span>Desk</span></div>
+        <div class="nav-section">WORKSPACE</div>
+        <a class="nav-link" href="index.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+        <a class="nav-link active" href="tickets.html"><i class="fa-solid fa-ticket"></i> All Tickets</a>
+        <a class="nav-link" href="create-ticket.html"><i class="fa-solid fa-circle-plus"></i> Create Ticket</a>
+        <a class="nav-link" href="ticket-details.html"><i class="fa-solid fa-file-lines"></i> Ticket Details</a>
+        <div class="nav-section">MANAGEMENT</div>
+        <a class="nav-link" href="employees.html"><i class="fa-solid fa-users"></i> Employees</a>
+        <a class="nav-link" href="technicians.html"><i class="fa-solid fa-user-gear"></i> Technicians</a>
+        <a class="nav-link" href="reports.html"><i class="fa-solid fa-chart-column"></i> Reports</a>
+        <a class="nav-link" href="settings.html"><i class="fa-solid fa-sliders"></i> Settings</a>
+        <div class="sidebar-footer">
+            <div style="font-weight:700">NexDesk Support</div>
+            <div style="font-size:12px;color:#c4b5fd">IT Service Management</div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <button class="btn btn-secondary" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+            <div class="search-box">
+                <input type="search" id="ticketSearch" placeholder="Search tickets...">
+            </div>
+            <button class="btn btn-secondary" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
+            <a class="btn btn-primary" href="create-ticket.html"><i class="fa-solid fa-plus"></i> New Ticket</a>
+            <a href="login.html" class="btn btn-secondary"><i class="fa-solid fa-user"></i></a>
+        </header>
+
+        <div class="page-content">
+            <section class="hero">
+                <h1>All Tickets</h1>
+                <p>View support tickets retrieved from the database.</p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="create-ticket.html"><i class="fa-solid fa-plus"></i> Create Ticket</a>
+                </div>
+            </section>
+
+            <article class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>Ticket Directory</h2>
+                        <div class="panel-subtitle" id="ticketMessage">Loading database tickets...</div>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table id="ticketsTable">
+                        <thead>
+                            <tr>
+                                <th>Ticket</th><th>Issue</th><th>Category</th>
+                                <th>Priority</th><th>Status</th><th>Created By</th><th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="liveTicketsBody">
+                            <tr><td colspan="7">Loading tickets...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </div>
+    </main>
+</div>
+
+<script src="script.js"></script>
+<script>
+(async function () {
+    const body = document.getElementById("liveTicketsBody");
+    const message = document.getElementById("ticketMessage");
+    const search = document.getElementById("ticketSearch");
+    let tickets = [];
+
+    function render(items) {
+        body.replaceChildren();
+
+        if (!items.length) {
+            const row = body.insertRow();
+            const cell = row.insertCell();
+            cell.colSpan = 7;
+            cell.textContent = "No tickets found.";
+            return;
+        }
+
+        items.forEach(t => {
+            const row = body.insertRow();
+            [
+                "#" + t.id, t.title, t.category || "—",
+                t.priority || "—", t.status || "—", t.creator || "—"
+            ].forEach(value => {
+                row.insertCell().textContent = value;
+            });
+
+            const action = row.insertCell();
+            const link = document.createElement("a");
+            link.className = "btn btn-secondary";
+            link.href = "ticket-details.html?id=" + encodeURIComponent(t.id);
+            link.textContent = "View";
+            action.appendChild(link);
+        });
+    }
+
+    try {
+        const response = await fetch("portal-data?type=tickets", { cache: "no-store" });
+        if (response.status === 401) {
+            window.location.href = "login.html";
+            return;
+        }
+        if (!response.ok) throw new Error("Server returned " + response.status);
+
+        const data = await response.json();
+        tickets = data.items || [];
+        render(tickets);
+        message.textContent = tickets.length + " ticket(s) loaded from the database.";
+
+        search.addEventListener("input", function () {
+            const term = search.value.toLowerCase();
+            render(tickets.filter(t =>
+                [t.id, t.title, t.category, t.priority, t.status, t.creator]
+                    .some(v => String(v || "").toLowerCase().includes(term))
+            ));
+        });
+    } catch (error) {
+        console.error(error);
+        message.textContent = "Unable to load tickets.";
+        body.innerHTML = '<tr><td colspan="7">Could not load tickets. Check the GlassFish server log.</td></tr>';
+    }
+})();
+</script>
+</body>
+</html>

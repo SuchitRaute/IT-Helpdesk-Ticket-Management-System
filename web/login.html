@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | NexDesk</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<div class="login-page">
+    <div class="login-card">
+
+        <a href="index.html" class="brand"
+           style="display:block;padding:0;color:#6c4bff">
+            <i class="fa-solid fa-headset"></i>Nex<span>Desk</span>
+        </a>
+
+        <h1>Welcome back 👋</h1>
+        <p>Sign in to your workspace and manage your support tickets.</p>
+
+        <div id="message"
+             style="display:none;padding:12px;margin-bottom:18px;
+                    border-radius:10px;font-size:13px">
+        </div>
+
+        <form action="login" method="post" id="loginForm">
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <div style="position:relative">
+                    <i class="fa-regular fa-envelope"
+                       style="position:absolute;left:14px;top:15px;
+                              color:#77748f"></i>
+                    <input class="form-control" style="padding-left:42px"
+                           type="email" id="email" name="email"
+                           placeholder="you@company.com" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div style="position:relative">
+                    <i class="fa-solid fa-lock"
+                       style="position:absolute;left:14px;top:15px;
+                              color:#77748f"></i>
+                    <input class="form-control"
+                           style="padding-left:42px;padding-right:45px"
+                           type="password" id="password" name="password"
+                           placeholder="Enter your password" required>
+                    <button type="button" id="togglePassword"
+                            aria-label="Show password"
+                            style="position:absolute;right:12px;top:11px;
+                                   border:0;background:transparent;
+                                   color:#77748f;padding:4px">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div style="display:flex;justify-content:space-between;
+                        align-items:center;gap:10px;margin-bottom:22px;
+                        font-size:12px">
+                <label style="display:flex;align-items:center;gap:7px">
+                    <input type="checkbox" id="remember">
+                    Remember me
+                </label>
+                <span style="color:#77748f">Secure sign in</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary"
+                    id="loginButton"
+                    style="width:100%;padding:14px">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                Sign In to NexDesk
+            </button>
+        </form>
+
+        <div style="text-align:center;margin-top:24px;font-size:12px;
+                    color:#77748f">
+            New to NexDesk?
+            <a href="register.html"
+               style="color:#6c4bff;font-weight:800">
+                Create an account
+            </a>
+        </div>
+
+        <div style="text-align:center;margin-top:28px;padding-top:18px;
+                    border-top:1px solid #e8e4fa;font-size:11px;
+                    color:#77748f">
+            <i class="fa-solid fa-shield-halved"
+               style="color:#10b981"></i>
+            Your account is protected by secure authentication.
+        </div>
+    </div>
+</div>
+
+<script>
+    const passwordInput = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+
+    togglePassword.addEventListener("click", function () {
+        const showing = passwordInput.type === "text";
+        passwordInput.type = showing ? "password" : "text";
+        togglePassword.innerHTML = showing
+            ? '<i class="fa-regular fa-eye"></i>'
+            : '<i class="fa-regular fa-eye-slash"></i>';
+        togglePassword.setAttribute(
+            "aria-label", showing ? "Show password" : "Hide password"
+        );
+    });
+
+    // Display a message when the servlet redirects with an error.
+    const params = new URLSearchParams(window.location.search);
+    const message = document.getElementById("message");
+
+    if (params.get("error")) {
+        message.style.display = "block";
+        message.style.background = "#ffe4e6";
+        message.style.color = "#be123c";
+        message.textContent = "Sign-in failed. Check your email and password.";
+    } else if (params.get("registered")) {
+        message.style.display = "block";
+        message.style.background = "#d1fae5";
+        message.style.color = "#047857";
+        message.textContent =
+            "Registration successful. You can now sign in.";
+    }
+</script>
+</body>
+</html>

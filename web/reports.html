@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexDesk | Reports</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+        <div class="brand"><i class="fa-solid fa-headset"></i> Nex<span>Desk</span></div>
+        <div class="nav-section">WORKSPACE</div>
+        <a class="nav-link" href="index.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+        <a class="nav-link" href="tickets.html"><i class="fa-solid fa-ticket"></i> All Tickets</a>
+        <a class="nav-link" href="create-ticket.html"><i class="fa-solid fa-circle-plus"></i> Create Ticket</a>
+        <a class="nav-link" href="ticket-details.html"><i class="fa-solid fa-file-lines"></i> Ticket Details</a>
+        <div class="nav-section">MANAGEMENT</div>
+        <a class="nav-link" href="employees.html"><i class="fa-solid fa-users"></i> Employees</a>
+        <a class="nav-link" href="technicians.html"><i class="fa-solid fa-user-gear"></i> Technicians</a>
+        <a class="nav-link active" href="reports.html"><i class="fa-solid fa-chart-column"></i> Reports</a>
+        <a class="nav-link" href="settings.html"><i class="fa-solid fa-sliders"></i> Settings</a>
+        <div class="sidebar-footer">
+            <div style="font-weight:700">NexDesk Support</div>
+            <div style="font-size:12px;color:#c4b5fd">IT Service Management</div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <button class="btn btn-secondary" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+            <div class="search-box"><input type="search" id="globalSearch" placeholder="Search..."></div>
+            <button class="btn btn-secondary" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
+            <a class="btn btn-secondary" href="login.html"><i class="fa-solid fa-user"></i></a>
+        </header>
+
+        <div class="page-content">
+            <section class="hero">
+                <h1>Reports & Analytics</h1>
+                <p>Ticket statistics calculated from your database records.</p>
+            </section>
+
+            <p id="reportMessage" role="status" style="margin-bottom:16px">
+                Loading report data...
+            </p>
+
+            <section class="metrics-grid">
+                <article class="metric-card">
+                    <div class="metric-icon"><i class="fa-solid fa-ticket"></i></div>
+                    <div class="metric-value" id="reportTotal">—</div>
+                    <div class="metric-label">Total Tickets</div>
+                </article>
+                <article class="metric-card">
+                    <div class="metric-icon"><i class="fa-solid fa-circle-dot"></i></div>
+                    <div class="metric-value" id="reportOpen">—</div>
+                    <div class="metric-label">Open Tickets</div>
+                </article>
+                <article class="metric-card">
+                    <div class="metric-icon"><i class="fa-solid fa-user-check"></i></div>
+                    <div class="metric-value" id="reportAssigned">—</div>
+                    <div class="metric-label">Assigned Tickets</div>
+                </article>
+                <article class="metric-card">
+                    <div class="metric-icon"><i class="fa-solid fa-spinner"></i></div>
+                    <div class="metric-value" id="reportProgress">—</div>
+                    <div class="metric-label">In Progress</div>
+                </article>
+                <article class="metric-card">
+                    <div class="metric-icon"><i class="fa-solid fa-circle-check"></i></div>
+                    <div class="metric-value" id="reportResolved">—</div>
+                    <div class="metric-label">Resolved Tickets</div>
+                </article>
+                <article class="metric-card">
+                    <div class="metric-icon"><i class="fa-solid fa-lock"></i></div>
+                    <div class="metric-value" id="reportClosed">—</div>
+                    <div class="metric-label">Closed Tickets</div>
+                </article>
+            </section>
+
+            <article class="panel" style="margin-top:22px">
+                <div class="panel-head">
+                    <div>
+                        <h2>Ticket Status Breakdown</h2>
+                        <div class="panel-subtitle">Based on current ticket statuses</div>
+                    </div>
+                </div>
+                <div class="panel-body" id="reportBars" style="display:grid;gap:18px">
+                    <p>Loading chart...</p>
+                </div>
+            </article>
+        </div>
+    </main>
+</div>
+
+<script src="script.js"></script>
+<script>
+(async function () {
+    const message = document.getElementById("reportMessage");
+    const bars = document.getElementById("reportBars");
+
+    const metrics = [
+        ["total", "reportTotal", "Total Tickets"],
+        ["open", "reportOpen", "Open"],
+        ["assigned", "reportAssigned", "Assigned"],
+        ["inProgress", "reportProgress", "In Progress"],
+        ["resolved", "reportResolved", "Resolved"],
+        ["closed", "reportClosed", "Closed"]
+    ];
+
+    try {
+        const response = await fetch("portal-data?type=reports", { cache: "no-store" });
+
+        if (response.status === 401) {
+            window.location.href = "login.html";
+            return;
+        }
+        if (!response.ok) throw new Error("Server returned " + response.status);
+
+        const report = await response.json();
+
+        metrics.forEach(([key, id]) => {
+            document.getElementById(id).textContent = report[key] ?? 0;
+        });
+
+        bars.replaceChildren();
+
+        metrics.slice(1).forEach(([key, , label]) => {
+            const count = Number(report[key] || 0);
+            const total = Number(report.total || 0);
+            const percent = total > 0 ? Math.round(count * 100 / total) : 0;
+
+            const container = document.createElement("div");
+
+            const heading = document.createElement("div");
+            heading.style.display = "flex";
+            heading.style.justifyContent = "space-between";
+            heading.style.marginBottom = "6px";
+
+            const name = document.createElement("span");
+            name.textContent = label;
+
+            const value = document.createElement("strong");
+            value.textContent = count + " (" + percent + "%)";
+
+            heading.append(name, value);
+
+            const track = document.createElement("div");
+            track.style.height = "10px";
+            track.style.background = "var(--border)";
+            track.style.borderRadius = "8px";
+            track.style.overflow = "hidden";
+
+            const fill = document.createElement("div");
+            fill.style.height = "100%";
+            fill.style.width = percent + "%";
+            fill.style.background = "var(--primary)";
+            fill.style.borderRadius = "8px";
+
+            track.appendChild(fill);
+            container.append(heading, track);
+            bars.appendChild(container);
+        });
+
+        message.textContent = "Report statistics loaded from the database.";
+    } catch (error) {
+        console.error(error);
+        message.textContent = "Unable to load report data. Check the GlassFish server log.";
+        bars.textContent = "Report chart unavailable.";
+    }
+})();
+</script>
+</body>
+</html>

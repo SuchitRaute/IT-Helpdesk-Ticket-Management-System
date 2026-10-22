@@ -1,0 +1,14 @@
+NexDesk existing Derby database notes
+======================================
+
+Do not rerun schema.sql against a database that already contains tables. schema.sql is for a fresh database only.
+
+This code uses PBKDF2 password hashes, so APP.USERS.PASSWORD_HASH must allow at least 200 characters. Check the existing column first. If it is still VARCHAR(64), run this one statement in NetBeans SQL:
+ALTER TABLE APP.USERS ALTER COLUMN PASSWORD_HASH SET DATA TYPE VARCHAR(200);
+
+The Ticket model/DAO expects APP.TICKETS to contain:
+TICKET_ID, TITLE, DESCRIPTION, CATEGORY, PRIORITY, STATUS, CREATED_BY, ASSIGNED_TO,
+CREATED_AT, UPDATED_AT, RESOLVED_AT.
+If RESOLVED_AT is already present, do not add it again.
+
+The application does not insert sample tickets or sample employees. Dashboard, ticket list, employee directory, technician list, and reports now load records from the current logged-in session and Derby database.
